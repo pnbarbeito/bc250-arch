@@ -1,6 +1,6 @@
 # BC-250 Arch - AMD BC-250 enable hardware acceleration for Arch-based Linux
 
-This repository contains an automated installation script to enable hardware acceleration and gaming capabilities for the AMD BC-250 Bitcoin mining blade on Arch-based Linux distributions (Manjaro, EndeavourOS, Garuda, ArcoLinux, Artix, etc.).
+This repository contains an automated installation script to enable hardware acceleration and gaming capabilities for the AMD BC-250 Bitcoin mining blade on Arch-based Linux distributions (Manjaro, EndeavourOS, Garuda, etc.).
 
 ## 🎯 Purpose
 
@@ -14,7 +14,7 @@ The AMD BC-250 is a Bitcoin mining blade manufactured by ASRock, featuring a cut
 
 ## 📋 Prerequisites
 
-- **Operating System**: Arch-based Linux distributions (Manjaro, EndeavourOS, Garuda, ArcoLinux, Artix, etc.)
+- **Operating System**: Arch-based Linux distributions (Manjaro, EndeavourOS, Garuda, etc.)
 - **Package Manager**: pacman (Arch Linux package manager)
 - **Hardware**: AMD BC-250 Bitcoin mining blade (ASRock manufactured)
 - **Privileges**: Root/sudo access
@@ -183,7 +183,7 @@ If you want to adjust the RAM/VRAM allocation ratio. The best results are obtain
 
 - **Compilation Time**: Initial Mesa installation (if needed) takes 30-60 minutes depending on your system ram assignation
 - **System Restart**: A reboot is required for all changes to take effect
-- **Arch-based Compatibility**: Works with Manjaro, EndeavourOS, Garuda, ArcoLinux, Artix and other Arch derivatives
+- **Arch-based Compatibility**: Works with Manjaro, EndeavourOS, Garuda and other Arch derivatives 
 - **Backup Recommended**: The script creates automatic backups, but consider creating a system snapshot before installing
 
 ## 🤝 Contributing
