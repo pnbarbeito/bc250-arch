@@ -37,7 +37,7 @@ detect_distro() {
         . /etc/os-release
         DISTRO_NAME="$NAME"
         DISTRO_ID="$ID"
-        elif [ -f /etc/lsb-release ]; then
+    elif [ -f /etc/lsb-release ]; then
         . /etc/lsb-release
         DISTRO_NAME="$DISTRIB_DESCRIPTION"
         DISTRO_ID="$DISTRIB_ID"
@@ -79,7 +79,7 @@ detect_init_system() {
     if command -v dracut &> /dev/null; then
         INITRAMFS_TOOL="dracut"
         print_status "Detected initramfs tool: dracut"
-        elif command -v mkinitcpio &> /dev/null; then
+    elif command -v mkinitcpio &> /dev/null; then
         INITRAMFS_TOOL="mkinitcpio"
         print_status "Detected initramfs tool: mkinitcpio"
     else
@@ -93,7 +93,7 @@ check_mesa_version() {
     print_status "Checking current Mesa version..."
     
     if pacman -Qi mesa &> /dev/null 2>&1; then
-        CURRENT_MESA=$(pacman -Qi mesa | grep "Version" | cut -d: -f2 | xargs | cut -d- -f1)
+        CURRENT_MESA=$(pacman -Qi mesa | grep "Vers" | cut -d: -f3 | xargs | cut -d- -f1)
         print_status "Current Mesa version: $CURRENT_MESA"
         
         # Compare version with 25.1
@@ -113,7 +113,7 @@ try:
     print('true' if current_ver >= target_ver else 'false')
 except Exception as e:
     print('false')
-            " 2>/dev/null || echo "false")
+" 2>/dev/null || echo "false")
             
             if [ "$SHOULD_SKIP" = "true" ]; then
                 print_warning "Mesa version $CURRENT_MESA is >= 25.1"
@@ -131,18 +131,18 @@ except Exception as e:
                         1|y|Y)
                             print_status "Continuing with mesa-git installation..."
                             return 0
-                        ;;
+                            ;;
                         2|n|N)
                             print_status "Skipping mesa-git installation..."
                             return 1
-                        ;;
+                            ;;
                         3|q|Q)
                             print_status "Exiting script..."
                             exit 0
-                        ;;
+                            ;;
                         *)
                             print_error "Invalid option. Please choose 1, 2, or 3"
-                        ;;
+                            ;;
                     esac
                 done
             fi
@@ -161,10 +161,10 @@ check_aur_helper() {
     if command -v yay &> /dev/null; then
         AUR_HELPER="yay"
         print_success "yay is already installed"
-        elif command -v paru &> /dev/null; then
+    elif command -v paru &> /dev/null; then
         AUR_HELPER="paru"
         print_success "paru is already installed"
-        elif command -v pikaur &> /dev/null; then
+    elif command -v pikaur &> /dev/null; then
         AUR_HELPER="pikaur"
         print_success "pikaur is already installed"
     else
@@ -180,7 +180,7 @@ install_yay() {
     sudo pacman -Sy --noconfirm
     
     print_status "Installing dependencies for yay..."
-    sudo pacman -S --needed --noconfirm git base-devel
+    sudo pacman -S --needed --noconfirm git base-devel go
     
     print_status "Cloning yay from AUR..."
     TEMP_DIR=$(mktemp -d)
@@ -217,7 +217,6 @@ update_system() {
 }
 
 # Install mesa-git
-# Install mesa-git
 install_mesa_git() {
     print_status "Installing mesa-git from AUR..."
     print_warning "This installation may take a long time (30-60 minutes)"
@@ -240,49 +239,51 @@ install_mesa_git() {
     # Install build dependencies
     print_status "Installing build dependencies..."
     $AUR_HELPER -S --needed --noconfirm \
-    python-mako \
-    libxml2 \
-    libx11 \
-    xorgproto \
-    libdrm \
-    libxshmfence \
-    libxxf86vm \
-    libxdamage \
-    libvdpau \
-    libva \
-    wayland \
-    wayland-protocols \
-    elfutils \
-    llvm \
-    libomxil-bellagio \
-    libclc \
-    clang \
-    vulkan-icd-loader \
-    glslang
+        python-mako \
+        libxml2 \
+        libx11 \
+        xorgproto \
+        libdrm \
+        libxshmfence \
+        libxxf86vm \
+        libxdamage \
+        libvdpau \
+        libva \
+        wayland \
+        wayland-protocols \
+        elfutils \
+        llvm \
+        libomxil-bellagio \
+        libclc \
+        clang \
+        vulkan-icd-loader \
+        glslang
     
-    # Install mesa-git and let the AUR helper handle conflicts
+    # Install mesa-git (handle conflicts automatically)
     print_status "Starting mesa-git installation..."
-    print_warning "The AUR helper will ask for confirmation to replace mesa with mesa-git"
-    print_status "Please answer 'y' when prompted to replace conflicting packages"
+    print_warning "This will replace the existing mesa package with mesa-git"
     
-    # Install mesa-git with the AUR helper handling conflicts
+    # Install mesa-git with conflict resolution parameters
     if [[ "$AUR_HELPER" == "yay" ]]; then
-        if ! $AUR_HELPER -S --answerclean All --answerdiff None mesa-git; then
+        if ! $AUR_HELPER -S --answerclean All --answerdiff None --overwrite "*" mesa-git; then
             print_error "Failed to install mesa-git with yay"
-            print_error "You can try manually: yay -S mesa-git"
+            print_error "Manual recovery: sudo pacman -S mesa (to restore stable mesa)"
+            print_error "Then try: yay -S mesa-git manually"
             return 1
         fi
-        elif [[ "$AUR_HELPER" == "paru" ]]; then
-        if ! $AUR_HELPER -S mesa-git; then
+    elif [[ "$AUR_HELPER" == "paru" ]]; then
+        if ! $AUR_HELPER -S --noconfirm --overwrite "*" mesa-git; then
             print_error "Failed to install mesa-git with paru"
-            print_error "You can try manually: paru -S mesa-git"
+            print_error "Manual recovery: sudo pacman -S mesa (to restore stable mesa)"
+            print_error "Then try: paru -S mesa-git manually"
             return 1
         fi
     else
         # For pikaur or other helpers
-        if ! $AUR_HELPER -S mesa-git; then
+        if ! $AUR_HELPER -S --noconfirm mesa-git; then
             print_error "Failed to install mesa-git with $AUR_HELPER"
-            print_error "You can try manually: $AUR_HELPER -S mesa-git"
+            print_error "Manual recovery: sudo pacman -S mesa (to restore stable mesa)"
+            print_error "Then try: $AUR_HELPER -S mesa-git manually"
             return 1
         fi
     fi
@@ -381,18 +382,18 @@ regenerate_initramfs() {
                 print_error "Failed to regenerate initramfs with dracut"
                 return 1
             fi
-        ;;
+            ;;
         "mkinitcpio")
             print_status "Using mkinitcpio to regenerate initramfs..."
             if ! sudo mkinitcpio -P; then
                 print_error "Failed to regenerate initramfs with mkinitcpio"
                 return 1
             fi
-        ;;
+            ;;
         "none")
             print_warning "No initramfs tool detected, skipping regeneration"
             return 0
-        ;;
+            ;;
     esac
     
     print_success "Initramfs regenerated successfully"
@@ -405,7 +406,7 @@ detect_bootloader() {
         if [ -d /boot/loader/entries ] || [ -f /boot/loader/loader.conf ]; then
             BOOTLOADER="systemd-boot"
             print_status "Detected bootloader: systemd-boot"
-            elif [ -f /etc/default/grub ] || [ -d /boot/grub ]; then
+        elif [ -f /etc/default/grub ] || [ -d /boot/grub ]; then
             BOOTLOADER="grub"
             print_status "Detected bootloader: GRUB (UEFI)"
         else
@@ -431,7 +432,7 @@ fix_systemd_boot_config() {
     # Find boot entries directory
     if [ -d /boot/loader/entries ]; then
         ENTRIES_DIR="/boot/loader/entries"
-        elif [ -d /efi/loader/entries ]; then
+    elif [ -d /efi/loader/entries ]; then
         ENTRIES_DIR="/efi/loader/entries"
     else
         print_warning "systemd-boot entries directory not found"
@@ -488,7 +489,7 @@ fix_grub_config() {
     print_status "Updating GRUB configuration..."
     if command -v grub-mkconfig &> /dev/null; then
         sudo grub-mkconfig -o /boot/grub/grub.cfg
-        elif command -v grub2-mkconfig &> /dev/null; then
+    elif command -v grub2-mkconfig &> /dev/null; then
         sudo grub2-mkconfig -o /boot/grub/grub.cfg
     else
         print_warning "No GRUB config generator found"
@@ -505,14 +506,14 @@ fix_bootloader_config() {
     case $BOOTLOADER in
         "grub")
             fix_grub_config
-        ;;
+            ;;
         "systemd-boot")
             fix_systemd_boot_config
-        ;;
+            ;;
         "unknown")
             print_warning "Unknown bootloader - skipping bootloader configuration"
             print_warning "You may need to manually remove 'nomodeset' from kernel parameters"
-        ;;
+            ;;
     esac
 }
 
@@ -524,7 +525,7 @@ verify_installation() {
         print_success "mesa-git is installed"
         
         # Show version information
-        MESA_VERSION=$(pacman -Qi mesa-git | grep "Version" | cut -d: -f2 | xargs)
+        MESA_VERSION=$(pacman -Qi mesa | grep "Vers" | cut -d: -f3 | xargs | cut -d- -f1)
         print_status "Installed version: $MESA_VERSION"
         
         # Check drivers
@@ -567,9 +568,9 @@ show_post_install_info() {
 
 # Main function
 main() {
-    echo "============================================================"
-    echo "  Automated Mesa-git & AMD BC-250 Optimizations Installer  "
-    echo "============================================================"
+    echo "============================================"
+    echo "  Mesa-git Installer for Arch-based Linux  "
+    echo "============================================"
     echo
     
     detect_distro
