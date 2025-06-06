@@ -1,10 +1,10 @@
 # BC-250 Setup Script
 
-Script to enable hardware acceleration on AMD BC-250 mining blades for Arch Linux.
+Script to install oberon-governor and mesa-git on AMD BC-250 mining blades with Arch Linux.
 
 ## What it does
 
-- Installs mesa-git if your Mesa version is outdated
+- Installs mesa-git if your Mesa version is outdated, if your mesa version >= 25.1, lets you decide if you want to keep it
 - Installs oberon-governor for power management
 - Configures some kernel parameters
 - Cleans up bootloader configuration
@@ -36,9 +36,11 @@ sudo pacman -S mesa
 
 ## Notes
 
-- Mesa-git installation can take 30-60 minutes
-- Script creates automatic backups
+- Mesa-git compilation can take 20-40 minutes
 - Compatible with systemd distributions only
+- Supports grub and systemd-boot bootloaders
+- Supports dracut and mkinitcpio for initramfs
+- Supports yay, paru and pikaur for AUR package management. If none is installed, yay will be installed.
 
 ---
 
@@ -46,4 +48,4 @@ sudo pacman -S mesa
 - [oberon-governor](https://gitlab.com/mothenjoyer69/oberon-governor) by @mothenjoyer69
 - [BC-250 Documentation](https://github.com/mothenjoyer69/bc250-documentation) by @mothenjoyer69
 - [BC-250 BIOS](https://gitlab.com/TuxThePenguin0/bc250-bios/) by @TuxThePenguin0
-- [Flash tool](https://github.com/kenavru/BC-250) by @kenavru
+- [BC-250 Guides](https://github.com/kenavru/BC-250) by @kenavru
