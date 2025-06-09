@@ -12,7 +12,7 @@ Script para instalar oberon-governor y mesa-git en placas AMD BC-250 con Arch Li
 ## Uso
 
 ```bash
-curl -O https://raw.githubusercontent.com/pbarbeito/bc250-arch/main/oberon_install.sh
+curl -O https://raw.githubusercontent.com/pnbarbeito/bc250-arch/refs/heads/main/oberon_install.sh
 chmod +x oberon_install.sh
 ./oberon_install.sh
 ```
