@@ -12,7 +12,7 @@ Script to install oberon-governor and mesa-git on AMD BC-250 mining blades with 
 ## Usage
 
 ```bash
-curl -O https://raw.githubusercontent.com/pbarbeito/bc250-arch/main/oberon_install.sh
+curl -O https://raw.githubusercontent.com/pnbarbeito/bc250-arch/refs/heads/main/oberon_install.sh
 chmod +x oberon_install.sh
 ./oberon_install.sh
 ```
