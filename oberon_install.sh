@@ -309,6 +309,20 @@ configure_amd_optimizations() {
     # Install GPU governor dependencies and build
     print_status "Installing GPU governor..."
     $AUR_HELPER -S --needed --noconfirm base-devel cmake git libdrm
+
+    # Clean up previous installations
+    print_status "Cleaning up previous installations..."
+    sudo systemctl stop oberon-governor.service 2>/dev/null || true
+    
+    if [ -f "/usr/local/bin/oberon-governor" ]; then
+        print_status "Removing incorrect installation from /usr/local/bin..."
+        sudo rm -f "/usr/local/bin/oberon-governor"
+    fi
+    
+    if [ -f "/usr/bin/oberon-governor" ]; then
+        print_status "Removing existing installation from /usr/bin..."
+        sudo rm -f "/usr/bin/oberon-governor"
+    fi
     
     # Clone and build oberon-governor
     TEMP_DIR=$(mktemp -d)
@@ -323,7 +337,7 @@ configure_amd_optimizations() {
     
     cd oberon-governor
     
-    if ! cmake .; then
+    if ! cmake -DCMAKE_INSTALL_PREFIX=/usr .; then
         print_error "CMake configuration failed"
         cd ~
         rm -rf "$TEMP_DIR"
@@ -346,8 +360,10 @@ configure_amd_optimizations() {
     
     # Enable the service only if it exists
     if systemctl list-unit-files | grep -q oberon-governor.service; then
+        sudo systemctl daemon-reload
         sudo systemctl enable oberon-governor.service
-        print_success "GPU governor service enabled"
+        sudo systemctl restart oberon-governor.service
+        print_success "GPU governor service enabled and started"
     else
         print_warning "oberon-governor service not found, may need manual configuration"
     fi
