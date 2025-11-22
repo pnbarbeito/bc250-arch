@@ -378,7 +378,7 @@ regenerate_initramfs() {
     case $INITRAMFS_TOOL in
         "dracut")
             print_status "Using dracut to regenerate initramfs..."
-            if ! sudo dracut --force --regenerate-all; then
+            if ! sudo dracut-rebuild; then
                 print_error "Failed to regenerate initramfs with dracut"
                 return 1
             fi
